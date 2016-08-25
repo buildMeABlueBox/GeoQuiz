@@ -1,5 +1,6 @@
 package com.example.abhijit_kamat.geoquiz;
 
+import android.inputmethodservice.Keyboard;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,7 +13,8 @@ import android.widget.Toast;
 
 public class QuizActivity extends AppCompatActivity {
 
-    private final String TAG = "QuizActivity";
+    private static final String TAG = "QuizActivity";
+    private static final String KEY_INDEX = "index";
 
     private Button mTrueButton;
     private Button mFalseButton;
@@ -60,6 +62,10 @@ public class QuizActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        if(savedInstanceState != null){
+            mCurrentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
+        }
 
         Log.d(TAG, "onCreate(Bundle) called");
 
@@ -109,6 +115,14 @@ public class QuizActivity extends AppCompatActivity {
         updateQuestion();
     }
 
+
+    @Override
+    public void onSaveInstanceState(Bundle saveInstanceState){
+        super.onSaveInstanceState(saveInstanceState);
+        Log.i(TAG,"onSaveInstance");
+        saveInstanceState.putInt(KEY_INDEX, mCurrentIndex);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
         getMenuInflater().inflate(R.menu.quiz, menu);
@@ -128,7 +142,7 @@ public class QuizActivity extends AppCompatActivity {
 
     private void checkAnswer(boolean userClickedTrue){
         boolean currentAnswerTrue = mQuestionBank[mCurrentIndex].isAnswerTrue();
-        if(currentAnswerTrue && userClickedTrue){
+        if(currentAnswerTrue == userClickedTrue){
             Toast.makeText(QuizActivity.this, R.string.correct_toast, Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(QuizActivity.this, R.string.incorrect_toast, Toast.LENGTH_SHORT).show();
